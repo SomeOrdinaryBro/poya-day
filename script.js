@@ -57,25 +57,33 @@ function createCalendar(m, y, days) {
 }
 
 function createList(days) {
+  // Build rows with an extra Month column
   const rows = days.map(h => {
     const dt = new Date(h.date);
+    const monthName = dt.toLocaleString("default", { month: "long" });
     return `
       <tr class="odd:bg-gray-800 even:bg-gray-700 hover:bg-gray-600">
+        <td class="px-3 py-2 text-sm">${monthName}</td>
         <td class="px-3 py-2 text-sm">${dt.toLocaleDateString()}</td>
-        <td class="px-3 py-2 text-sm">${dt.toLocaleString("default",{weekday:"short"})}</td>
+        <td class="px-3 py-2 text-sm">${dt.toLocaleString("default",{ weekday:"short" })}</td>
         <td class="px-3 py-2 text-sm">${h.name}</td>
       </tr>`;
   }).join("");
+
+  // Prepend a header row with the new Month column
   return `
     <table class="w-full rounded-lg shadow-lg overflow-hidden">
       <thead>
         <tr class="bg-gray-800">
+          <th class="px-3 py-2 text-sm text-left">Month</th>
           <th class="px-3 py-2 text-sm text-left">Date</th>
           <th class="px-3 py-2 text-sm text-left">Day</th>
           <th class="px-3 py-2 text-sm text-left">Holiday</th>
         </tr>
       </thead>
-      <tbody>${rows}</tbody>
+      <tbody>
+        ${rows}
+      </tbody>
     </table>`;
 }
 
