@@ -6,22 +6,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <!-- Primary Meta Tags -->
-  <title>Sri Lankan Poya Days Calendar</title>
-  <meta name="description" content="Discover all Sri Lankan Poya days in an interactive calendar or list. Fully responsive, SEO-optimized, and shareable.">
+  <title>Sri Lankan Poya Days Calendar 2025 – Interactive Poya Day List & Calendar</title>
+  <meta name="description" content="View every Sri Lankan Poya Day in 2025 in our interactive calendar or as a filtered list. Responsive, SEO-optimized, and shareable.">
   <link rel="canonical" href="https://yourdomain.com/poya-calendar">
 
   <!-- Open Graph -->
-  <meta property="og:title" content="Sri Lankan Poya Days Calendar">
-  <meta property="og:description" content="Discover all Sri Lankan Poya days in an interactive calendar or list.">
+  <meta property="og:title" content="Sri Lankan Poya Days Calendar 2025">
+  <meta property="og:description" content="Interactive calendar & list of Sri Lankan Poya days for 2025.">
   <meta property="og:image" content="https://yourdomain.com/assets/poya-preview.png">
   <meta property="og:url" content="https://yourdomain.com/poya-calendar">
   <meta property="og:type" content="website">
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Sri Lankan Poya Days Calendar">
-  <meta name="twitter:description" content="Discover all Sri Lankan Poya days in an interactive calendar or list.">
+  <meta name="twitter:title" content="Sri Lankan Poya Days Calendar 2025">
+  <meta name="twitter:description" content="Interactive calendar & list of Sri Lankan Poya days for 2025.">
   <meta name="twitter:image" content="https://yourdomain.com/assets/poya-preview.png">
+
+  <!-- Favicons & PWA Icons -->
+  <link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="./assets/android-chrome-192x192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="./assets/android-chrome-512x512.png">
+  <link rel="manifest" href="./assets/site.webmanifest">
+  <meta name="msapplication-TileColor" content="#2b5797">
+  <meta name="msapplication-TileImage" content="./assets/android-chrome-512x512.png">
+  <meta name="theme-color" content="#ffffff">
 
   <!-- Preconnect & Preload Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -31,18 +42,16 @@
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = { darkMode: 'class' };
-  </script>
+  <script>tailwind.config = { darkMode: 'class' };</script>
 
-  <!-- Structured Data -->
+  <!-- Structured Data: Website -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": "Sri Lankan Poya Calendar",
+    "name": "Sri Lankan Poya Days Calendar",
     "url": "https://yourdomain.com/poya-calendar",
-    "description": "Interactive calendar listing all Sri Lankan Poya days."
+    "description": "Interactive calendar listing all Sri Lankan Poya days for 2025."
   }
   </script>
 </head>
@@ -50,13 +59,12 @@
   <header class="bg-gray-800 shadow-md">
     <nav class="max-w-4xl mx-auto p-4 flex justify-between items-center">
       <a href="https://github.com/SomeOrdinaryBro" class="text-xl font-bold text-white">@SomeOrdinaryBro</a>
-      <ul class="flex space-x-4">
-      </ul>
+      <ul class="flex space-x-4"></ul>
     </nav>
   </header>
 
   <main class="flex-grow flex flex-col items-center p-4 space-y-6">
-    <h1 class="text-4xl font-semibold text-center">Sri Lankan Poya Days</h1>
+    <h1 class="text-4xl font-semibold text-center">Sri Lankan Poya Days Calendar 2025</h1>
     <section class="w-full max-w-3xl bg-gray-800 rounded-lg shadow-xl p-6">
       <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
         <div class="flex space-x-2">
@@ -78,11 +86,11 @@
 
   <footer class="bg-gray-800 py-4">
     <div class="max-w-4xl mx-auto text-center text-gray-400 text-sm">
-      &copy; 2025 Sri Lankan Poya Calendar
+      &copy; 2025 Sri Lankan Poya Days Calendar
     </div>
   </footer>
 
-  <!-- Inline App Script -->
+  <!-- Inline App + JSON-LD Events Script -->
   <script>
     const API_URL = 'https://raw.githubusercontent.com/Dilshan-H/srilanka-holidays/main/json/{YEAR}.json';
     let cache = {}, view = 'calendar', all = false;
@@ -95,38 +103,12 @@
     const calContainer = document.getElementById('calendarContainer');
     const listContainer = document.getElementById('holidayTableContainer');
 
-    function init() {
-      const y = new Date().getFullYear();
-      for (let i = y - 1; i <= y + 1; i++) yearSelect.add(new Option(i, i));
-      for (let m = 0; m < 12; m++) monthSelect.add(new Option(new Date(0, m).toLocaleString('default', { month: 'long' }), m));
-      yearSelect.value = y;
-      monthSelect.value = new Date().getMonth();
-      [yearSelect, monthSelect].forEach(el => el.addEventListener('change', render));
-      calendarBtn.addEventListener('click', () => toggleView('calendar'));
-      listBtn.addEventListener('click', () => toggleView('list'));
-      allBtn.addEventListener('click', () => toggleView(view, true));
-      exportBtn.addEventListener('click', exportCSV);
-      updateButtons(); render();
-    }
-
-    function toggleView(v, isAll = false) {
-      view = v; all = isAll; updateButtons(); render();
-    }
-
-    function updateButtons() {
-      [calendarBtn, listBtn, allBtn].forEach(b => {
-        b.classList.replace('bg-yellow-500', 'bg-gray-700');
-        b.classList.replace('text-gray-900', 'text-gray-200');
-      });
-      const active = all ? allBtn : (view === 'calendar' ? calendarBtn : listBtn);
-      active.classList.replace('bg-gray-700', 'bg-yellow-500');
-      active.classList.replace('text-gray-200', 'text-gray-900');
-    }
-
     async function fetchData(year) {
       if (cache[year]) return cache[year];
       const data = await fetch(API_URL.replace('{YEAR}', year)).then(r => r.json());
-      return cache[year] = data.filter(h => /Poya/i.test(h.summary)).map(h => ({ date: h.start, name: h.summary }));
+      return cache[year] = data
+        .filter(h => /Poya/i.test(h.summary))
+        .map(h => ({ date: h.start, name: h.summary }));
     }
 
     function createCalendar(m, y, days) {
@@ -143,7 +125,9 @@
             ${hol ? `<span class="relative text-2xs mt-1 text-white">${hol.name}</span>` : ''}
           </div>`;
       }
-      const hdr = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => `<div class="bg-gray-800 p-2 text-center text-xs font-semibold text-gray-400">${d}</div>`).join('');
+      const hdr = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
+        .map(d => `<div class="bg-gray-800 p-2 text-center text-xs font-semibold text-gray-400">${d}</div>`)
+        .join('');
       return `<div class="grid grid-cols-7 gap-px bg-gray-700 rounded-lg overflow-hidden">${hdr}${cells}</div>`;
     }
 
@@ -177,7 +161,8 @@
           listContainer.classList.remove('hidden');
         } else {
           for (let i = 0; i < 12; i++) {
-            calContainer.innerHTML += `<h2 class="mt-4 mb-2 text-xl font-medium">${new Date(0,i).toLocaleString('default',{month:'long'})} ${y}</h2>` + createCalendar(i, y, days);
+            calContainer.innerHTML += `<h2 class="mt-4 mb-2 text-xl font-medium">${new Date(0,i).toLocaleString('default',{month:'long'})} ${y}</h2>` +
+              createCalendar(i, y, days);
           }
         }
       } else {
@@ -189,6 +174,20 @@
           calContainer.innerHTML = createCalendar(m, y, days);
         }
       }
+    }
+
+    function updateButtons() {
+      [calendarBtn, listBtn, allBtn].forEach(b => {
+        b.classList.replace('bg-yellow-500', 'bg-gray-700');
+        b.classList.replace('text-gray-900', 'text-gray-200');
+      });
+      const active = all ? allBtn : (view === 'calendar' ? calendarBtn : listBtn);
+      active.classList.replace('bg-gray-700', 'bg-yellow-500');
+      active.classList.replace('text-gray-200', 'text-gray-900');
+    }
+
+    function toggleView(v, isAll = false) {
+      view = v; all = isAll; updateButtons(); render();
     }
 
     function exportCSV() {
@@ -207,6 +206,40 @@
         a.click();
         URL.revokeObjectURL(url);
       });
+    }
+
+    // JSON-LD events injection
+    async function addJsonLdEvents(year) {
+      const days = await fetchData(year);
+      const events = days.map(h => ({
+        "@type": "Event",
+        "name": h.name,
+        "startDate": h.date,
+        "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+        "eventStatus": "https://schema.org/EventScheduled",
+        "location": { "@type": "Place", "name": "Sri Lanka" }
+      }));
+      const jsonLd = { "@context": "https://schema.org", "@graph": events };
+      const tag = document.createElement('script');
+      tag.type = 'application/ld+json';
+      tag.text = JSON.stringify(jsonLd, null, 2);
+      document.head.appendChild(tag);
+    }
+
+    function init() {
+      const y = new Date().getFullYear();
+      for (let i = y - 1; i <= y + 1; i++) yearSelect.add(new Option(i, i));
+      for (let m = 0; m < 12; m++) monthSelect.add(new Option(new Date(0, m).toLocaleString('default', { month: 'long' }), m));
+      yearSelect.value = y;
+      monthSelect.value = new Date().getMonth();
+      [yearSelect, monthSelect].forEach(el => el.addEventListener('change', render));
+      calendarBtn.addEventListener('click', () => toggleView('calendar'));
+      listBtn.addEventListener('click', () => toggleView('list'));
+      allBtn.addEventListener('click', () => toggleView(view, true));
+      exportBtn.addEventListener('click', exportCSV);
+      updateButtons();
+      render();
+      addJsonLdEvents(y);
     }
 
     init();
