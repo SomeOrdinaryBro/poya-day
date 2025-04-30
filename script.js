@@ -39,7 +39,7 @@ function createCalendar(m, y, days) {
   for (let i = 0; i < 42; i++) {
     const day = (i >= first && d <= total) ? d++ : "";
     const id = day
-      ? `${y}-${String(m+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`
+      ? `${y}-${String(m+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`
       : null;
     const hol = day && days.find(x => x.date === id);
     cells += `
@@ -57,7 +57,6 @@ function createCalendar(m, y, days) {
 }
 
 function createList(days) {
-  // Build rows with an extra Month column
   const rows = days.map(h => {
     const dt = new Date(h.date);
     const monthName = dt.toLocaleString("default", { month: "long" });
@@ -70,7 +69,6 @@ function createList(days) {
       </tr>`;
   }).join("");
 
-  // Prepend a header row with the new Month column
   return `
     <table class="w-full rounded-lg shadow-lg overflow-hidden">
       <thead>
@@ -94,17 +92,9 @@ async function render() {
   listContainer.innerHTML = "";
 
   if (all) {
-    if (view === "list") {
-      listContainer.innerHTML = createList(days);
-      listContainer.classList.remove("hidden");
-    } else {
-      for (let i = 0; i < 12; i++) {
-        calContainer.innerHTML += `
-          <h2 class="mt-4 mb-2 text-xl font-medium">
-            ${new Date(0,i).toLocaleString("default",{month:"long"})} ${y}
-          </h2>` + createCalendar(i, y, days);
-      }
-    }
+    // Always show list with month column when 'All Months' is active
+    listContainer.innerHTML = createList(days);
+    listContainer.classList.remove("hidden");
   } else {
     if (view === "list") {
       const filtered = days.filter(h => new Date(h.date).getMonth() === m);
@@ -121,31 +111,30 @@ function updateButtons() {
     b.classList.replace("bg-yellow-500","bg-gray-700");
     b.classList.replace("text-gray-900","text-gray-200");
   });
-  const active = all
-    ? allBtn
-    : (view === "calendar" ? calendarBtn : listBtn);
+  const active = all ? allBtn : (view === "calendar" ? calendarBtn : listBtn);
   active.classList.replace("bg-gray-700","bg-yellow-500");
   active.classList.replace("text-gray-200","text-gray-900");
 }
 
 function toggleView(v, isAll = false) {
-  view = v; all = isAll;
-  updateButtons(); render();
+  view = v;
+  all = isAll;
+  updateButtons();
+  render();
 }
 
 function exportCSV() {
   const y = +yearSelect.value;
   fetchData(y).then(days => {
-    const out = ["Date,Day,Holiday"];
+    const out = ["Month,Date,Day,Holiday"];
     days.forEach(h => {
       const dt = new Date(h.date);
+      const monthName = dt.toLocaleString("default", { month: "long" });
       out.push(
-        `${dt.toLocaleDateString()},` +
-        `${dt.toLocaleString("default",{weekday:"short"})}` +
-        `,"${h.name}"`
+        `${monthName},${dt.toLocaleDateString()},${dt.toLocaleString("default",{weekday:"short"})},"${h.name}"`
       );
     });
-    const blob = new Blob([out.join("\n")], {type:"text/csv"});
+    const blob = new Blob([out.join("\n")], { type: "text/csv" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = `holidays_${countrySelect.value}_${y}.csv`;
@@ -154,47 +143,48 @@ function exportCSV() {
   });
 }
 
-async function addJsonLdEvents(year) {
-  const days = await fetchData(year);
-  const events = days.map(h => ({
-    "@type":"Event",
-    name:h.name,
-    startDate:h.date,
-    eventAttendanceMode:"https://schema.org/OfflineEventAttendanceMode",
-    eventStatus:"https://schema.org/EventScheduled",
-    location:{
-      "@type":"Place",
-      name: countrySelect.value==="SL"?
-        "Sri Lanka":countrySelect.value==="US"?
-        "United States":"Australia"
-    }
-  }));
-  const tag=document.createElement("script");
-  tag.type="application/ld+json";
-  tag.text=JSON.stringify({"@context":"https://schema.org","@graph":events},null,2);
-  document.head.appendChild(tag);
+function addJsonLdEvents(year) {
+  // existing JSON-LD injection unchanged
+  fetchData(year).then(days => {
+    const events = days.map(h => ({
+      "@type":"Event",
+      name:h.name,
+      startDate:h.date,
+      eventAttendanceMode:"https://schema.org/OfflineEventAttendanceMode",
+      eventStatus:"https://schema.org/EventScheduled",
+      location:{
+        "@type":"Place",
+        name: countrySelect.value==="SL"?"Sri Lanka":countrySelect.value==="US"?"United States":"Australia"
+      }
+    }));
+    const tag = document.createElement("script");
+    tag.type = "application/ld+json";
+    tag.text = JSON.stringify({"@context":"https://schema.org","@graph":events},null,2);
+    document.head.appendChild(tag);
+  });
 }
 
 function init() {
-  const y=new Date().getFullYear();
-  for(let i=y-1;i<=y+1;i++) yearSelect.add(new Option(i,i));
-  for(let m=0;m<12;m++) monthSelect.add(
-    new Option(new Date(0,m).toLocaleString("default",{month:"long"}), m)
+  const y = new Date().getFullYear();
+  for (let i = y - 1; i <= y + 1; i++) yearSelect.add(new Option(i, i));
+  for (let m = 0; m < 12; m++) monthSelect.add(
+    new Option(new Date(0, m).toLocaleString("default",{month:"long"}), m)
   );
-  yearSelect.value=y;
-  monthSelect.value=new Date().getMonth();
+  yearSelect.value = y;
+  monthSelect.value = new Date().getMonth();
 
-  [countrySelect,yearSelect,monthSelect].forEach(el=>
-    el.addEventListener("change",()=>{
-      cache={}; render(); addJsonLdEvents(+yearSelect.value);
-    })
-  );
-  calendarBtn.addEventListener("click",()=>toggleView("calendar"));
-  listBtn.addEventListener("click",()=>toggleView("list"));
-  allBtn.addEventListener("click",()=>toggleView(view,true));
-  exportBtn.addEventListener("click",exportCSV);
+  countrySelect.addEventListener("change", () => toggleView(view, false));
+  yearSelect.addEventListener("change", () => toggleView(view, false));
+  monthSelect.addEventListener("change", () => toggleView(view, false));
 
-  updateButtons(); render(); addJsonLdEvents(y);
+  calendarBtn.addEventListener("click", () => toggleView("calendar", false));
+  listBtn.addEventListener("click", () => toggleView("list", false));
+  allBtn.addEventListener("click", () => toggleView("list", true));
+  exportBtn.addEventListener("click", exportCSV);
+
+  updateButtons();
+  render();
+  addJsonLdEvents(y);
 }
 
 init();
