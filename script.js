@@ -15,7 +15,8 @@ async function fetchData(year) {
   const cacheKey = `${country}-${year}`;
   if (cache[cacheKey]) return cache[cacheKey];
 
-  let raw;
+  let raw = [];
+
   if (country === "SL") {
     // Sri Lanka: fetch Poya days JSON
     raw = await fetch(
@@ -26,19 +27,16 @@ async function fetchData(year) {
       .map(h => ({ date: h.start, name: h.summary }));
 
   } else if (country === "CA") {
-    // Canada: load local JSON file only
+    // Canada: always use local JSON file
     raw = await fetch("assets/ca-holidays-2025.json").then(r => r.json());
-    // JSON is already in format [{date, name}, ...]
+    // File contains [{"date":"YYYY-MM-DD","name":"..."}, ...]
 
   } else if (country === "US" || country === "AU") {
-    // United States or Australia: use public API
+    // United States or Australia: use Nager.Date public API
     raw = await fetch(
       `https://date.nager.at/api/v3/PublicHolidays/${year}/${country}`
     ).then(r => r.json());
     raw = raw.map(h => ({ date: h.date, name: h.localName }));
-
-  } else {
-    raw = [];
   }
 
   cache[cacheKey] = raw;
@@ -52,7 +50,7 @@ function createCalendar(m, y, days) {
   for (let i = 0; i < 42; i++) {
     const day = (i >= first && d <= total) ? d++ : "";
     const id = day
-      ? `${y}-${String(m + 1).padStart(2,'0')}-${String(day).padStart(2,'0')}`
+      ? `${y}-${String(m + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
       : null;
     const hol = day && days.find(x => x.date === id);
     cells += `
@@ -105,7 +103,6 @@ async function render() {
   listContainer.innerHTML = "";
 
   if (all) {
-    // Always show list for All Months
     listContainer.innerHTML = createList(days);
     listContainer.classList.remove("hidden");
   } else {
@@ -121,12 +118,12 @@ async function render() {
 
 function updateButtons() {
   [calendarBtn, listBtn, allBtn].forEach(b => {
-    b.classList.replace("bg-yellow-500","bg-gray-700");
-    b.classList.replace("text-gray-900","text-gray-200");
+    b.classList.replace("bg-yellow-500", "bg-gray-700");
+    b.classList.replace("text-gray-900", "text-gray-200");
   });
   const active = all ? allBtn : (view === "calendar" ? calendarBtn : listBtn);
-  active.classList.replace("bg-gray-700","bg-yellow-500");
-  active.classList.replace("text-gray-200","text-gray-900");
+  active.classList.replace("bg-gray-700", "bg-yellow-500");
+  active.classList.replace("text-gray-200", "text-gray-900");
 }
 
 function toggleView(v, isAll = false) {
@@ -147,7 +144,7 @@ function exportCSV() {
         `${monthName},${dt.toLocaleDateString()},${dt.toLocaleString("default",{weekday:"short"})},"${h.name}"`
       );
     });
-    const blob = new Blob([out.join("\n")], {type:"text/csv"});
+    const blob = new Blob([out.join("\n")], { type: "text/csv" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = `holidays_${countrySelect.value}_${y}.csv`;
@@ -159,13 +156,13 @@ function exportCSV() {
 function addJsonLdEvents(year) {
   fetchData(year).then(days => {
     const events = days.map(h => ({
-      "@type":"Event",
-      name:h.name,
-      startDate:h.date,
-      eventAttendanceMode:"https://schema.org/OfflineEventAttendanceMode",
-      eventStatus:"https://schema.org/EventScheduled",
-      location:{
-        "@type":"Place",
+      "@type": "Event",
+      name: h.name,
+      startDate: h.date,
+      eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+      eventStatus: "https://schema.org/EventScheduled",
+      location: {
+        "@type": "Place",
         name: countrySelect.value === "SL" ? "Sri Lanka"
           : countrySelect.value === "US" ? "United States"
           : countrySelect.value === "AU" ? "Australia"
@@ -174,7 +171,7 @@ function addJsonLdEvents(year) {
     }));
     const tag = document.createElement("script");
     tag.type = "application/ld+json";
-    tag.text = JSON.stringify({"@context":"https://schema.org","@graph":events},null,2);
+    tag.text = JSON.stringify({ "@context": "https://schema.org", "@graph": events }, null, 2);
     document.head.appendChild(tag);
   });
 }
@@ -183,7 +180,7 @@ function init() {
   const y = new Date().getFullYear();
   for (let i = y - 1; i <= y + 1; i++) yearSelect.add(new Option(i, i));
   for (let m = 0; m < 12; m++) monthSelect.add(
-    new Option(new Date(0,m).toLocaleString("default",{month:"long"}), m)
+    new Option(new Date(0, m).toLocaleString("default", { month: "long" }), m)
   );
   yearSelect.value = y;
   monthSelect.value = new Date().getMonth();
