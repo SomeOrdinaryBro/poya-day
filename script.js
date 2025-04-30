@@ -23,12 +23,18 @@ async function fetchData(year) {
     raw = raw
       .filter(h => /Poya/i.test(h.summary))
       .map(h => ({ date: h.start, name: h.summary }));
+  } else if (country === "CA") {
+    // Local Canadian holidays JSON
+    raw = await fetch("assets/ca-holidays-2025.json").then(r => r.json());
+    // JSON entries already { date, name }
   } else {
+    // US or AU via Nager.Date
     raw = await fetch(
       `https://date.nager.at/api/v3/PublicHolidays/${year}/${country}`
     ).then(r => r.json());
     raw = raw.map(h => ({ date: h.date, name: h.localName }));
   }
+
   return (cache[cacheKey] = raw);
 }
 
@@ -39,18 +45,18 @@ function createCalendar(m, y, days) {
   for (let i = 0; i < 42; i++) {
     const day = (i >= first && d <= total) ? d++ : "";
     const id = day
-      ? `${y}-${String(m+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`
+      ? `${y}-${String(m + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
       : null;
     const hol = day && days.find(x => x.date === id);
     cells += `
       <div class="relative bg-gray-800 p-2 h-16 flex flex-col items-center justify-center text-sm ${
-        hol ? "before:absolute before:inset-0 before:bg-yellow-600 before:bg-opacity-75 before:rounded-lg" : ""
+        hol ? 'before:absolute before:inset-0 before:bg-yellow-600 before:bg-opacity-75 before:rounded-lg' : ''
       }">
-        <span class="${hol ? "relative text-white font-semibold" : ""}">${day}</span>
-        ${hol ? `<span class="relative text-2xs mt-1 text-white">${hol.name}</span>` : ""}
+        <span class="${hol ? 'relative text-white font-semibold' : ''}">${day}</span>
+        ${hol ? `<span class="relative text-2xs mt-1 text-white">${hol.name}</span>` : ''}
       </div>`;
   }
-  const hdr = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
+  const hdr = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
     .map(d => `<div class="bg-gray-800 p-2 text-center text-xs font-semibold text-gray-400">${d}</div>`)
     .join("");
   return `<div class="grid grid-cols-7 gap-px bg-gray-700 rounded-lg overflow-hidden">${hdr}${cells}</div>`;
@@ -64,7 +70,7 @@ function createList(days) {
       <tr class="odd:bg-gray-800 even:bg-gray-700 hover:bg-gray-600">
         <td class="px-3 py-2 text-sm">${monthName}</td>
         <td class="px-3 py-2 text-sm">${dt.toLocaleDateString()}</td>
-        <td class="px-3 py-2 text-sm">${dt.toLocaleString("default",{ weekday:"short" })}</td>
+        <td class="px-3 py-2 text-sm">${dt.toLocaleString("default", { weekday: "short" })}</td>
         <td class="px-3 py-2 text-sm">${h.name}</td>
       </tr>`;
   }).join("");
@@ -108,12 +114,12 @@ async function render() {
 
 function updateButtons() {
   [calendarBtn, listBtn, allBtn].forEach(b => {
-    b.classList.replace("bg-yellow-500","bg-gray-700");
-    b.classList.replace("text-gray-900","text-gray-200");
+    b.classList.replace("bg-yellow-500", "bg-gray-700");
+    b.classList.replace("text-gray-900", "text-gray-200");
   });
   const active = all ? allBtn : (view === "calendar" ? calendarBtn : listBtn);
-  active.classList.replace("bg-gray-700","bg-yellow-500");
-  active.classList.replace("text-gray-200","text-gray-900");
+  active.classList.replace("bg-gray-700", "bg-yellow-500");
+  active.classList.replace("text-gray-200", "text-gray-900");
 }
 
 function toggleView(v, isAll = false) {
@@ -131,7 +137,7 @@ function exportCSV() {
       const dt = new Date(h.date);
       const monthName = dt.toLocaleString("default", { month: "long" });
       out.push(
-        `${monthName},${dt.toLocaleDateString()},${dt.toLocaleString("default",{weekday:"short"})},"${h.name}"`
+        `${monthName},${dt.toLocaleDateString()},${dt.toLocaleString("default", {weekday: "short"})},"${h.name}"`
       );
     });
     const blob = new Blob([out.join("\n")], { type: "text/csv" });
@@ -143,32 +149,33 @@ function exportCSV() {
   });
 }
 
-function addJsonLdEvents(year) {
-  // existing JSON-LD injection unchanged
-  fetchData(year).then(days => {
-    const events = days.map(h => ({
-      "@type":"Event",
-      name:h.name,
-      startDate:h.date,
-      eventAttendanceMode:"https://schema.org/OfflineEventAttendanceMode",
-      eventStatus:"https://schema.org/EventScheduled",
-      location:{
-        "@type":"Place",
-        name: countrySelect.value==="SL"?"Sri Lanka":countrySelect.value==="US"?"United States":"Australia"
-      }
-    }));
-    const tag = document.createElement("script");
-    tag.type = "application/ld+json";
-    tag.text = JSON.stringify({"@context":"https://schema.org","@graph":events},null,2);
-    document.head.appendChild(tag);
-  });
+async function addJsonLdEvents(year) {
+  const days = await fetchData(year);
+  const events = days.map(h => ({
+    "@type": "Event",
+    name: h.name,
+    startDate: h.date,
+    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    eventStatus: "https://schema.org/EventScheduled",
+    location: {
+      "@type": "Place",
+      name: countrySelect.value === "SL" ? "Sri Lanka"
+            : countrySelect.value === "US" ? "United States"
+            : countrySelect.value === "AU" ? "Australia"
+            : "Canada"
+    }
+  }));
+  const tag = document.createElement("script");
+  tag.type = "application/ld+json";
+  tag.text = JSON.stringify({ "@context": "https://schema.org", "@graph": events }, null, 2);
+  document.head.appendChild(tag);
 }
 
 function init() {
   const y = new Date().getFullYear();
   for (let i = y - 1; i <= y + 1; i++) yearSelect.add(new Option(i, i));
   for (let m = 0; m < 12; m++) monthSelect.add(
-    new Option(new Date(0, m).toLocaleString("default",{month:"long"}), m)
+    new Option(new Date(0, m).toLocaleString("default", {month: "long"}), m)
   );
   yearSelect.value = y;
   monthSelect.value = new Date().getMonth();
