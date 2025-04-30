@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://someordinarybro.github.io/poya-day/sitemap.xml
