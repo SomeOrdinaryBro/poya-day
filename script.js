@@ -31,8 +31,17 @@ async function fetchData(year) {
     raw = await fetch("assets/ca-holidays-2025.json").then(r => r.json());
     // File contains [{"date":"YYYY-MM-DD","name":"..."}, ...]
 
-  } else if (country === "US" || country === "AU") {
-    // United States or Australia: use Nager.Date public API
+  } else if (country === "US") {
+    // United States: show only federal (global) holidays
+    raw = await fetch(
+      `https://date.nager.at/api/v3/PublicHolidays/${year}/${country}`
+    ).then(r => r.json());
+    raw = raw
+      .filter(h => h.global)
+      .map(h => ({ date: h.date, name: h.localName }));
+
+  } else if (country === "AU") {
+    // Australia: use public API (all public holidays)
     raw = await fetch(
       `https://date.nager.at/api/v3/PublicHolidays/${year}/${country}`
     ).then(r => r.json());
