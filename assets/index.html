@@ -11,11 +11,28 @@
 <body class="dark bg-gray-900 text-gray-100 font-sans antialiased flex items-center justify-center min-h-screen p-4">
   <div class="text-center space-y-4">
     <p class="text-2xl font-semibold">Aaaah aahh ahh… no no!</p>
-    <p class="text-lg">What are you doing here Fam? Go back to the main page.</p>
-    <p class="text-lg">Bro think he a hacker 💔🥀LMAO😔</p>
+    <p class="text-lg">What are you doing here, fam? This isn't the main page.</p>
+    <p class="text-lg">Bro thinks he's a hacker 💔🥀 LMAO 😔 Look at this 😆 hahahah!</p>
+    <p class="italic text-gray-400">(Seriously, go back. We're watching 😉)</p>
     <button onclick="window.location.href='https://someordinarybro.github.io/poya-day/'" class="mt-2 px-6 py-2 bg-yellow-500 text-gray-900 rounded-md font-semibold hover:bg-yellow-600">
-      Go Back
+      Go Back to Safety
     </button>
+    <!-- Warning and user info display -->
+    <p id="userInfo" class="mt-4 text-sm text-red-400"></p>
   </div>
+
+  <script>
+    // Fetch user IP and display along with user agent
+    const userInfoEl = document.getElementById('userInfo');
+    fetch('https://api.ipify.org?format=json')
+      .then(res => res.json())
+      .then(data => {
+        userInfoEl.textContent =
+          `Your IP ${data.ip} has been logged on the server for review. User Agent: ${navigator.userAgent}`;
+      })
+      .catch(() => {
+        userInfoEl.textContent = 'Your access is noted; suspicious activity will be reviewed.';
+      });
+  </script>
 </body>
 </html>
