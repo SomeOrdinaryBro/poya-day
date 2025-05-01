@@ -29,21 +29,21 @@ async function fetchData(year) {
   } else if (country === "CA") {
     // Canada: always use local JSON file
     raw = await fetch("assets/ca-holidays-2025.json").then(r => r.json());
-    // File contains [{"date":"YYYY-MM-DD","name":"..."}, ...]
+    // File contains [{date, name}, ...]
 
   } else if (country === "US") {
-    // United States: show only federal (global) holidays
+    // United States: only federal (global) and official public holidays
     raw = await fetch(
-      `https://date.nager.at/api/v3/PublicHolidays/${year}/${country}`
+      `https://date.nager.at/api/v3/PublicHolidays/${year}/US`
     ).then(r => r.json());
     raw = raw
-      .filter(h => h.global)
+      .filter(h => h.global && h.types.includes("Public"))
       .map(h => ({ date: h.date, name: h.localName }));
 
   } else if (country === "AU") {
-    // Australia: use public API (all public holidays)
+    // Australia: use public API for all public holidays
     raw = await fetch(
-      `https://date.nager.at/api/v3/PublicHolidays/${year}/${country}`
+      `https://date.nager.at/api/v3/PublicHolidays/${year}/AU`
     ).then(r => r.json());
     raw = raw.map(h => ({ date: h.date, name: h.localName }));
   }
@@ -59,7 +59,7 @@ function createCalendar(m, y, days) {
   for (let i = 0; i < 42; i++) {
     const day = (i >= first && d <= total) ? d++ : "";
     const id = day
-      ? `${y}-${String(m + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+      ? `${y}-${String(m + 1).padStart(2,'0')}-${String(day).padStart(2,'0')}`
       : null;
     const hol = day && days.find(x => x.date === id);
     cells += `
@@ -149,9 +149,9 @@ function exportCSV() {
     days.forEach(h => {
       const dt = new Date(h.date);
       const monthName = dt.toLocaleString("default", { month: "long" });
-      out.push(
-        `${monthName},${dt.toLocaleDateString()},${dt.toLocaleString("default",{weekday:"short"})},"${h.name}"`
-      );
+      out.push(`
+        ${monthName},${dt.toLocaleDateString()},${dt.toLocaleString("default",{weekday:"short"})},"${h.name}"
+      `);
     });
     const blob = new Blob([out.join("\n")], { type: "text/csv" });
     const a = document.createElement("a");
@@ -173,9 +173,9 @@ function addJsonLdEvents(year) {
       location: {
         "@type": "Place",
         name: countrySelect.value === "SL" ? "Sri Lanka"
+          : countrySelect.value === "CA" ? "Canada"
           : countrySelect.value === "US" ? "United States"
-          : countrySelect.value === "AU" ? "Australia"
-          : "Canada"
+          : "Australia"
       }
     }));
     const tag = document.createElement("script");
