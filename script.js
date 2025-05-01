@@ -18,7 +18,6 @@ async function fetchData(year) {
   let raw = [];
 
   if (country === "SL") {
-    // Sri Lanka: fetch Poya days JSON
     raw = await fetch(
       `https://raw.githubusercontent.com/Dilshan-H/srilanka-holidays/main/json/${year}.json`
     ).then(r => r.json());
@@ -27,16 +26,24 @@ async function fetchData(year) {
       .map(h => ({ date: h.start, name: h.summary }));
 
   } else if (country === "CA") {
-    // Canada: always use local JSON file
     raw = await fetch("assets/ca-holidays-2025.json").then(r => r.json());
-    // File contains [{"date":"YYYY-MM-DD","name":"..."}, ...]
 
-  } else if (country === "US" || country === "AU") {
-    // United States or Australia: use Nager.Date public API
+  } else if (country === "US") {
     raw = await fetch(
-      `https://date.nager.at/api/v3/PublicHolidays/${year}/${country}`
+      `https://date.nager.at/api/v3/PublicHolidays/${year}/US`
+    ).then(r => r.json());
+    raw = raw
+      .filter(h => h.global)
+      .map(h => ({ date: h.date, name: h.localName }));
+
+  } else if (country === "AU") {
+    raw = await fetch(
+      `https://date.nager.at/api/v3/PublicHolidays/${year}/AU`
     ).then(r => r.json());
     raw = raw.map(h => ({ date: h.date, name: h.localName }));
+
+  } else if (country === "GB") {
+    raw = await fetch("assets/gb-bank-holidays-2025-27.json").then(r => r.json());
   }
 
   cache[cacheKey] = raw;
@@ -96,6 +103,21 @@ function createList(days) {
     </table>`;
 }
 
+/**
+ * Displays the next upcoming holiday based on sorted days array.
+ */
+function updateNextHoliday(days) {
+  const today = new Date().toISOString().slice(0,10);
+  const next = days.find(h => h.date >= today);
+  const el = document.getElementById('nextHolidayText');
+  if (!next) {
+    el.textContent = 'None left this year';
+  } else {
+    const dt = new Date(next.date);
+    el.textContent = `${dt.toLocaleDateString()} – ${next.name}`;
+  }
+}
+
 async function render() {
   const y = +yearSelect.value, m = +monthSelect.value;
   const days = await fetchData(y);
@@ -114,6 +136,9 @@ async function render() {
       calContainer.innerHTML = createCalendar(m, y, days);
     }
   }
+
+  // Update the next holiday display
+  updateNextHoliday(days);
 }
 
 function updateButtons() {
@@ -164,9 +189,10 @@ function addJsonLdEvents(year) {
       location: {
         "@type": "Place",
         name: countrySelect.value === "SL" ? "Sri Lanka"
+          : countrySelect.value === "CA" ? "Canada"
           : countrySelect.value === "US" ? "United States"
           : countrySelect.value === "AU" ? "Australia"
-          : "Canada"
+          : "United Kingdom"
       }
     }));
     const tag = document.createElement("script");
