@@ -1,0 +1,17 @@
+{
+  "name": "poya-day",
+  "version": "1.0.0",
+  "description": "Interactive, responsive Sri Lankan Poya Days Calendar built with Tailwind CSS and vanilla JS",
+  "main": "script.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jsdom": "^26.1.0"
+  }
+}
