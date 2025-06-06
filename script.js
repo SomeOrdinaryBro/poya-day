@@ -124,21 +124,20 @@ async function render() {
   calContainer.innerHTML = "";
   listContainer.innerHTML = "";
 
+  // Hide both containers initially, then reveal the one for the active view
+  calContainer.classList.add("hidden");
+  listContainer.classList.add("hidden");
+
   if (all) {
     listContainer.innerHTML = createList(days);
     listContainer.classList.remove("hidden");
-    calContainer.classList.add("hidden");
+  } else if (view === "list") {
+    const filtered = days.filter(h => new Date(h.date).getMonth() === m);
+    listContainer.innerHTML = createList(filtered);
+    listContainer.classList.remove("hidden");
   } else {
-    if (view === "list") {
-      const filtered = days.filter(h => new Date(h.date).getMonth() === m);
-      listContainer.innerHTML = createList(filtered);
-      listContainer.classList.remove("hidden");
-      calContainer.classList.add("hidden");
-    } else {
-      calContainer.innerHTML = createCalendar(m, y, days);
-      calContainer.classList.remove("hidden");
-      listContainer.classList.add("hidden");
-    }
+    calContainer.innerHTML = createCalendar(m, y, days);
+    calContainer.classList.remove("hidden");
   }
 
   // Update the next holiday display
