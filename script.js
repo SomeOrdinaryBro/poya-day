@@ -127,13 +127,17 @@ async function render() {
   if (all) {
     listContainer.innerHTML = createList(days);
     listContainer.classList.remove("hidden");
+    calContainer.classList.add("hidden");
   } else {
     if (view === "list") {
       const filtered = days.filter(h => new Date(h.date).getMonth() === m);
       listContainer.innerHTML = createList(filtered);
       listContainer.classList.remove("hidden");
+      calContainer.classList.add("hidden");
     } else {
       calContainer.innerHTML = createCalendar(m, y, days);
+      calContainer.classList.remove("hidden");
+      listContainer.classList.add("hidden");
     }
   }
 
