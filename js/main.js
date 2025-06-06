@@ -12,20 +12,6 @@ const exportBtn = document.getElementById('exportCsvBtn');
 const calContainer = document.getElementById('calendarContainer');
 const listContainer = document.getElementById('holidayTableContainer');
 const nextHolidayEl = document.getElementById('nextHolidayText');
-const nextContainer = document.getElementById('nextHolidayContainer');
-const themeToggle = document.getElementById('themeToggle');
-
-let view = 'calendar', all = false;
-
-function fadeIn(el) {
-  el.classList.remove('hidden');
-  el.classList.add('opacity-0');
-  requestAnimationFrame(() => el.classList.remove('opacity-0'));
-}
-
-function hide(el) {
-  el.classList.add('hidden');
-}
 
 async function render() {
   const y = +yearSelect.value, m = +monthSelect.value;
@@ -35,23 +21,15 @@ async function render() {
 
   if (all) {
     listContainer.innerHTML = createList(days);
-    fadeIn(listContainer);
-    hide(calContainer);
+
   } else {
     if (view === 'list') {
       const filtered = days.filter(h => new Date(h.date).getMonth() === m);
       listContainer.innerHTML = createList(filtered);
-      fadeIn(listContainer);
-      hide(calContainer);
-    } else {
-      calContainer.innerHTML = createCalendar(m, y, days);
-      fadeIn(calContainer);
-      hide(listContainer);
     }
   }
 
   updateNextHoliday(days, nextHolidayEl);
-  fadeIn(nextContainer);
 }
 
 function updateButtons() {
@@ -70,23 +48,6 @@ function toggleView(v, isAll = false) {
   updateButtons();
   render();
 }
-
-function applyTheme(dark) {
-  document.documentElement.classList.toggle('dark', dark);
-  themeToggle.textContent = dark ? '☀️' : '🌙';
-  localStorage.setItem('theme', dark ? 'dark' : 'light');
-}
-
-function initTheme() {
-  const saved = localStorage.getItem('theme');
-  const prefers = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  applyTheme(saved ? saved === 'dark' : prefers);
-}
-
-function init() {
-  initTheme();
-  themeToggle.addEventListener('click', () =>
-    applyTheme(!document.documentElement.classList.contains('dark')));
 
   const y = new Date().getFullYear();
   for (let i = y - 1; i <= y + 1; i++) yearSelect.add(new Option(i, i));
