@@ -1,2 +1,2 @@
 # poya-calendar
-Interactive, responsive Sri Lankan Poya Days Calendar built with Tailwind CSS and vanilla JS
+Interactive, responsive global holiday calendar built with Tailwind CSS and vanilla JS. It lists holidays for Sri Lanka, the US, Australia, Canada, and the UK.
