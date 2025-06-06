@@ -23,19 +23,7 @@
 
   <script>
     const userInfoEl = document.getElementById('userInfo');
-    // Fetch IP and location info
-    fetch('https://ipapi.co/json/')
-      .then(res => res.json())
-      .then(data => {
-        const { ip, city, region, country_name: country } = data;
-        const ua = navigator.userAgent;
-        userInfoEl.innerHTML = 
-          `⚠️ WARNING! Your IP <strong>${ip}</strong> from <strong>${city}, ${region}, ${country}</strong> has been logged for review.<br>User Agent: <em>${ua}</em>`;
-      })
-      .catch(() => {
-        userInfoEl.textContent = 
-          '⚠️ WARNING! Suspicious access detected; your activity is under review.';
-      });
+    userInfoEl.textContent = '⚠️ WARNING! Your visit has been logged.';
   </script>
 </body>
 </html>
