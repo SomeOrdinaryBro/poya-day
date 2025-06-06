@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <!-- Primary Meta Tags -->
-  <title>Global Holiday Calendar 2025</title>
+  <title>Global Holiday Calendar</title>
   <meta name="description" content="Browse holidays in Sri Lanka, the US, Australia, Canada or the UK via our interactive calendar or list. Fully responsive and SEO-optimized." />
   <link rel="canonical" href="https://someordinarybro.github.io/poya-day/" />
 
   <!-- Open Graph -->
-  <meta property="og:title" content="Global Holiday Calendar 2025" />
+  <meta property="og:title" content="Global Holiday Calendar" />
   <meta property="og:description" content="Interactive holiday calendar & list for Sri Lanka, US, Australia, Canada, and the UK." />
   <meta property="og:image" content="https://someordinarybro.github.io/poya-day/assets/poya-preview.png" />
   <meta property="og:url" content="https://someordinarybro.github.io/poya-day/" />
@@ -19,7 +19,7 @@
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Global Holiday Calendar 2025" />
+  <meta name="twitter:title" content="Global Holiday Calendar" />
   <meta name="twitter:description" content="Interactive holiday calendar & list for Sri Lanka, US, Australia, Canada, and the UK." />
   <meta name="twitter:image" content="https://someordinarybro.github.io/poya-day/assets/poya-preview.png" />
 
@@ -41,26 +41,27 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { darkMode: 'class' };</script>
 </head>
-<body class="dark bg-gray-900 text-gray-100 font-sans antialiased flex flex-col min-h-screen">
+<body class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100 font-sans antialiased flex flex-col min-h-screen">
 
   <!-- Header -->
-  <header class="bg-gray-800 shadow-md">
-    <nav class="flex items-center p-4">
-      <a href="https://github.com/SomeOrdinaryBro" class="flex items-center text-sm text-gray-300 hover:text-white">
+  <header class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 shadow-md">
+    <nav class="flex items-center p-4 max-w-4xl mx-auto">
+      <a href="https://github.com/SomeOrdinaryBro" class="flex items-center text-sm text-gray-100 hover:text-white">
         <img src="assets/github_logo/github-mark-white.svg" alt="GitHub" class="w-5 h-5 mr-2" />
         @SomeOrdinaryBro
       </a>
       <div class="flex-1"></div>
+      <button id="themeToggle" class="p-2 text-xl text-gray-100 hover:text-white transition-colors"></button>
     </nav>
   </header>
 
   <!-- Main Content -->
-  <main class="flex-grow flex flex-col items-center p-4 gap-4 overflow-y-auto">
-    <h1 class="text-2xl sm:text-4xl font-semibold text-center mt-6">Global Holiday Calendar 2025</h1>
+  <main class="flex-grow flex flex-col items-center p-6 gap-6 overflow-y-auto w-full max-w-4xl mx-auto">
+    <h1 class="text-3xl sm:text-5xl font-semibold text-center mt-6">Global Holiday Calendar</h1>
 
     <!-- Controls -->
-    <section class="w-full max-w-3xl bg-gray-800 rounded-lg shadow-xl p-4 mt-6">
-      <div class="flex flex-wrap justify-center gap-2">
+    <section class="w-full bg-white/70 dark:bg-gray-800/60 backdrop-blur-md rounded-xl shadow-xl p-4 mt-6 border border-gray-200 dark:border-gray-700">
+      <div class="flex flex-wrap justify-center gap-3">
         <select id="countrySelect" class="bg-gray-700 text-gray-200 px-2 py-1 rounded-md text-sm">
           <option value="SL">Sri Lanka</option>
           <option value="US">United States</option>
@@ -70,19 +71,19 @@
         </select>
         <select id="yearSelect" class="bg-gray-700 text-gray-200 px-2 py-1 rounded-md text-sm"></select>
         <select id="monthSelect" class="bg-gray-700 text-gray-200 px-2 py-1 rounded-md text-sm"></select>
-        <button id="calendarViewBtn" class="px-3 py-1 bg-yellow-500 text-gray-900 rounded-md text-sm">Calendar</button>
-        <button id="holidayViewBtn" class="px-3 py-1 bg-gray-700 text-gray-200 rounded-md text-sm">List</button>
-        <button id="allViewBtn" class="px-3 py-1 bg-gray-700 text-gray-200 rounded-md text-sm">All Months</button>
-        <button id="exportCsvBtn" class="px-3 py-1 bg-green-500 text-gray-900 rounded-md text-sm">Export CSV</button>
+        <button id="calendarViewBtn" class="px-3 py-1 bg-yellow-500 text-gray-900 rounded-md text-sm transition-colors duration-200 focus:outline-none hover:bg-yellow-600">Calendar</button>
+        <button id="holidayViewBtn" class="px-3 py-1 bg-gray-700 text-gray-200 rounded-md text-sm transition-colors duration-200 focus:outline-none hover:bg-gray-600">List</button>
+        <button id="allViewBtn" class="px-3 py-1 bg-gray-700 text-gray-200 rounded-md text-sm transition-colors duration-200 focus:outline-none hover:bg-gray-600">All Months</button>
+        <button id="exportCsvBtn" class="px-3 py-1 bg-green-500 text-gray-900 rounded-md text-sm transition-colors duration-200 focus:outline-none hover:bg-green-600">Export CSV</button>
       </div>
     </section>
 
     <!-- Data Views -->
-    <section id="calendarContainer" class="w-full max-w-3xl overflow-x-auto"></section>
-    <section id="holidayTableContainer" class="w-full max-w-3xl hidden overflow-x-auto "></section>
+    <section id="calendarContainer" class="w-full overflow-x-auto transition-opacity duration-300 opacity-0"></section>
+    <section id="holidayTableContainer" class="w-full hidden overflow-x-auto transition-opacity duration-300 opacity-0"></section>
 
     <!-- Next Holiday Section -->
-    <section id="nextHolidayContainer" class="w-full max-w-3xl bg-gray-800 rounded-lg shadow-xl p-4 mt-6 text-center mt-6">
+    <section id="nextHolidayContainer" class="w-full bg-white/70 dark:bg-gray-800/60 backdrop-blur-md rounded-xl shadow-xl p-4 mt-6 text-center transition-opacity duration-300 opacity-0 border border-gray-200 dark:border-gray-700">
       <span class="text-lg font-medium">Next Holiday:</span>
       <span id="nextHolidayText" class="ml-2 text-lg"></span>
     </section>
@@ -90,12 +91,15 @@
   </main>
 
   <!-- Footer -->
-  <footer class="bg-gray-800 py-4">
+  <footer class="bg-gray-800 dark:bg-gray-950 py-4">
     <div class="max-w-4xl mx-auto text-center text-gray-400 text-sm">
-      &copy; 2025 Global Holiday Calendar by Sajid
+      &copy; <span id="currentYear"></span> Global Holiday Calendar by Sajid
     </div>
   </footer>
 
-  <script src="script.js"></script>
+  <script type="module" src="js/main.js"></script>
+  <script>
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>
