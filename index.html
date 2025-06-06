@@ -70,19 +70,19 @@
         </select>
         <select id="yearSelect" class="bg-gray-700 text-gray-200 px-2 py-1 rounded-md text-sm"></select>
         <select id="monthSelect" class="bg-gray-700 text-gray-200 px-2 py-1 rounded-md text-sm"></select>
-        <button id="calendarViewBtn" class="px-3 py-1 bg-yellow-500 text-gray-900 rounded-md text-sm">Calendar</button>
-        <button id="holidayViewBtn" class="px-3 py-1 bg-gray-700 text-gray-200 rounded-md text-sm">List</button>
-        <button id="allViewBtn" class="px-3 py-1 bg-gray-700 text-gray-200 rounded-md text-sm">All Months</button>
-        <button id="exportCsvBtn" class="px-3 py-1 bg-green-500 text-gray-900 rounded-md text-sm">Export CSV</button>
+        <button id="calendarViewBtn" class="px-3 py-1 bg-yellow-500 text-gray-900 rounded-md text-sm transition-colors duration-200 focus:outline-none">Calendar</button>
+        <button id="holidayViewBtn" class="px-3 py-1 bg-gray-700 text-gray-200 rounded-md text-sm transition-colors duration-200 focus:outline-none">List</button>
+        <button id="allViewBtn" class="px-3 py-1 bg-gray-700 text-gray-200 rounded-md text-sm transition-colors duration-200 focus:outline-none">All Months</button>
+        <button id="exportCsvBtn" class="px-3 py-1 bg-green-500 text-gray-900 rounded-md text-sm transition-colors duration-200 focus:outline-none">Export CSV</button>
       </div>
     </section>
 
     <!-- Data Views -->
-    <section id="calendarContainer" class="w-full max-w-3xl overflow-x-auto"></section>
-    <section id="holidayTableContainer" class="w-full max-w-3xl hidden overflow-x-auto "></section>
+    <section id="calendarContainer" class="w-full max-w-3xl overflow-x-auto transition-opacity duration-300 opacity-0"></section>
+    <section id="holidayTableContainer" class="w-full max-w-3xl hidden overflow-x-auto transition-opacity duration-300 opacity-0"></section>
 
     <!-- Next Holiday Section -->
-    <section id="nextHolidayContainer" class="w-full max-w-3xl bg-gray-800 rounded-lg shadow-xl p-4 mt-6 text-center mt-6">
+    <section id="nextHolidayContainer" class="w-full max-w-3xl bg-gray-800 rounded-lg shadow-xl p-4 mt-6 text-center mt-6 transition-opacity duration-300 opacity-0">
       <span class="text-lg font-medium">Next Holiday:</span>
       <span id="nextHolidayText" class="ml-2 text-lg"></span>
     </section>
