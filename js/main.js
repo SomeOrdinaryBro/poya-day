@@ -13,8 +13,6 @@ const calContainer = document.getElementById('calendarContainer');
 const listContainer = document.getElementById('holidayTableContainer');
 const nextHolidayEl = document.getElementById('nextHolidayText');
 
-let view = 'calendar', all = false;
-
 async function render() {
   const y = +yearSelect.value, m = +monthSelect.value;
   const days = await fetchData(y, countrySelect.value);
@@ -23,18 +21,11 @@ async function render() {
 
   if (all) {
     listContainer.innerHTML = createList(days);
-    listContainer.classList.remove('hidden');
-    calContainer.classList.add('hidden');
+
   } else {
     if (view === 'list') {
       const filtered = days.filter(h => new Date(h.date).getMonth() === m);
       listContainer.innerHTML = createList(filtered);
-      listContainer.classList.remove('hidden');
-      calContainer.classList.add('hidden');
-    } else {
-      calContainer.innerHTML = createCalendar(m, y, days);
-      calContainer.classList.remove('hidden');
-      listContainer.classList.add('hidden');
     }
   }
 
@@ -58,7 +49,6 @@ function toggleView(v, isAll = false) {
   render();
 }
 
-function init() {
   const y = new Date().getFullYear();
   for (let i = y - 1; i <= y + 1; i++) yearSelect.add(new Option(i, i));
   for (let m = 0; m < 12; m++)
