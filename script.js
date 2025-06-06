@@ -1,12 +1,18 @@
-const countrySelect = document.getElementById("countrySelect");
-const yearSelect = document.getElementById("yearSelect");
-const monthSelect = document.getElementById("monthSelect");
-const calendarBtn = document.getElementById("calendarViewBtn");
-const listBtn = document.getElementById("holidayViewBtn");
-const allBtn = document.getElementById("allViewBtn");
-const exportBtn = document.getElementById("exportCsvBtn");
-const calContainer = document.getElementById("calendarContainer");
-const listContainer = document.getElementById("holidayTableContainer");
+let countrySelect, yearSelect, monthSelect,
+    calendarBtn, listBtn, allBtn,
+    exportBtn, calContainer, listContainer;
+
+if (typeof document !== 'undefined') {
+  countrySelect = document.getElementById("countrySelect");
+  yearSelect = document.getElementById("yearSelect");
+  monthSelect = document.getElementById("monthSelect");
+  calendarBtn = document.getElementById("calendarViewBtn");
+  listBtn = document.getElementById("holidayViewBtn");
+  allBtn = document.getElementById("allViewBtn");
+  exportBtn = document.getElementById("exportCsvBtn");
+  calContainer = document.getElementById("calendarContainer");
+  listContainer = document.getElementById("holidayTableContainer");
+}
 
 let cache = {}, view = "calendar", all = false;
 
@@ -228,4 +234,10 @@ function init() {
   addJsonLdEvents(y);
 }
 
-init();
+if (typeof document !== 'undefined') {
+  init();
+}
+
+if (typeof module !== 'undefined') {
+  module.exports = { createCalendar };
+}
